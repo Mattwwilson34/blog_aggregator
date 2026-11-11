@@ -1,2 +1,2 @@
-{ "db_url": "postgres://example", "current_username": "mattwilson" }
+{ "db_url": "postgres://example", "current_username": "" }
 

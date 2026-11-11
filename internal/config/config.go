@@ -14,7 +14,7 @@ type Config struct {
 	CurrentUsername string `json:"current_username"`
 }
 
-func Read() (Config, error) {
+func (c *Config) Read() (Config, error) {
 	filepath, err := getConfigFilepath()
 	if err != nil {
 		return Config{}, err
@@ -28,9 +28,15 @@ func Read() (Config, error) {
 		return Config{}, err
 	}
 
-	fmt.Println(string(file))
+	return config, nil
+}
 
-	return Config{}, nil
+func (c *Config) Print() {
+	cfg, err := c.Read()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(cfg)
 }
 
 func getConfigFilepath() (string, error) {
@@ -42,7 +48,7 @@ func getConfigFilepath() (string, error) {
 	return fullConfigPath, nil
 }
 
-func Write(cfg Config) error {
+func Write(cfg *Config) error {
 	cfgJson, err := json.Marshal(cfg)
 	if err != nil {
 		return err
@@ -59,11 +65,8 @@ func Write(cfg Config) error {
 }
 
 func (cfg *Config) SetUser(username string) error {
-	newConfig := Config{
-		DBURL:           DBURL,
-		CurrentUsername: username,
-	}
-	err := Write(newConfig)
+	cfg.CurrentUsername = username
+	err := Write(cfg)
 	if err != nil {
 		return err
 	}
