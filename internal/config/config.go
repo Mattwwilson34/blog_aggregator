@@ -14,7 +14,7 @@ type Config struct {
 	CurrentUsername string `json:"current_username"`
 }
 
-func (c *Config) Read() (Config, error) {
+func Read() (Config, error) {
 	filepath, err := getConfigFilepath()
 	if err != nil {
 		return Config{}, err
@@ -31,23 +31,6 @@ func (c *Config) Read() (Config, error) {
 	return config, nil
 }
 
-func (c *Config) Print() {
-	cfg, err := c.Read()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(cfg)
-}
-
-func getConfigFilepath() (string, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	fullConfigPath := cwd + configPath
-	return fullConfigPath, nil
-}
-
 func Write(cfg *Config) error {
 	cfgJson, err := json.Marshal(cfg)
 	if err != nil {
@@ -62,6 +45,31 @@ func Write(cfg *Config) error {
 		return err
 	}
 	return nil
+}
+
+func Print() {
+	cfg, err := Read()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	b, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	_, err = fmt.Fprintln(os.Stdout, string(b))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+
+	}
+}
+
+func getConfigFilepath() (string, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	fullConfigPath := cwd + configPath
+	return fullConfigPath, nil
 }
 
 func (cfg *Config) SetUser(username string) error {

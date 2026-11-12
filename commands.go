@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type command struct {
 	name string
@@ -8,26 +11,30 @@ type command struct {
 }
 
 type commands struct {
-	cmd map[string]func(s *state, cmd command) error
+	cmd map[string]registeredCommand
+}
+
+type registeredCommand struct {
+	name     string
+	callback func(s *state, cmd command) error
 }
 
 func (c *commands) run(s *state, cmd command) error {
 	command, ok := c.cmd[cmd.name]
 	if !ok {
-		fmt.Println("command not found")
+		return fmt.Errorf("command %q not found", cmd.name)
 	}
-	err := command(s, cmd)
-	if err != nil {
-		return err
-	}
-	return nil
+	return command.callback(s, cmd)
 }
 
 func (c *commands) register(name string, f func(s *state, cmd command) error) error {
 	_, ok := c.cmd[name]
 	if ok {
-		fmt.Printf("the command %s has already been registered", name)
+		fmt.Fprintf(os.Stderr, "the command %s has already been registered", name)
 	}
-	c.cmd["name"] = f
+	c.cmd[name] = registeredCommand{
+		name:     name,
+		callback: f,
+	}
 	return nil
 }

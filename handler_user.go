@@ -1,10 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
-		return fmt.Errorf("the login handler expects a single argument, username")
+		return fmt.Errorf("the login handler expects a single argument, <login> <username>")
 	}
 
 	username := cmd.args[0]
@@ -12,7 +15,7 @@ func handlerLogin(s *state, cmd command) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("current user ste to: %s", username)
+	fmt.Fprintf(os.Stderr, "current user set to: %q\n", username)
 
 	return nil
 }
