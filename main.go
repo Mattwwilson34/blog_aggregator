@@ -1,13 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/Mattwwilson34/blog_aggregator/internal/config"
+	"github.com/Mattwwilson34/blog_aggregator/internal/database"
+	_ "github.com/lib/pq"
 )
 
 type state struct {
+	db       *database.Queries
 	config   config.Config
 	commands commands
 }
@@ -17,14 +21,28 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "error reading config")
 	}
+
+	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	newDB := database.New(db)
+
 	state := state{
+		db:     newDB,
 		config: cfg, commands: commands{
 			cmd: map[string]registeredCommand{},
 		},
 	}
+	err = state.commands.register("register", hanlderRegister)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	err = state.commands.register("login", handlerLogin)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	args := os.Args
@@ -38,12 +56,10 @@ func main() {
 		args: args[2:],
 	}
 
-	config.Print()
 	err = state.commands.run(&state, userCommand)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
 	config.Print()
 }
