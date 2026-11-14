@@ -1,0 +1,5 @@
+[sqruff]
+dialect = postgres
+
+[sqruff:rules:capitalisation.keywords]
+capitalisation_policy = upper
