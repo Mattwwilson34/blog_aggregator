@@ -34,12 +34,22 @@ func main() {
 			cmd: map[string]registeredCommand{},
 		},
 	}
-	err = state.commands.register("register", hanlderRegister)
+	err = state.commands.register("register", handlerRegister)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 	err = state.commands.register("login", handlerLogin)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	err = state.commands.register("users", handlerUsers)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	err = state.commands.register("reset", handlerReset)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -61,5 +71,4 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	config.Print()
 }
