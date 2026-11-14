@@ -7,7 +7,6 @@ import (
 )
 
 const fileName = ".gatorconfig.json"
-const DBURL = "postgres://example"
 
 type Config struct {
 	DBURL           string `json:"db_url"`
@@ -16,7 +15,6 @@ type Config struct {
 
 func Read() (Config, error) {
 	filepath, err := getConfigFilepath()
-	fmt.Fprintln(os.Stderr, filepath)
 	if err != nil {
 		return Config{}, err
 	}

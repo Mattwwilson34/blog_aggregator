@@ -7,8 +7,6 @@ import (
 	"github.com/Mattwwilson34/blog_aggregator/internal/config"
 )
 
-const DBURL = "postgres://example"
-
 type state struct {
 	config   config.Config
 	commands commands
